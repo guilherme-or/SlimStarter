@@ -34,10 +34,19 @@ $repositories($containerBuilder);
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
 
+/** @var SettingsInterface $settings */
+$settings = $container->get(SettingsInterface::class);
+
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $callableResolver = $app->getCallableResolver();
+
+// Set base path if exists
+$serverPath = $settings->get('serverPath');
+if (isset($serverPath)) {
+	$app->setBasePath($serverPath);
+}
 
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';
@@ -46,9 +55,6 @@ $middleware($app);
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';
 $routes($app);
-
-/** @var SettingsInterface $settings */
-$settings = $container->get(SettingsInterface::class);
 
 $displayErrorDetails = $settings->get('displayErrorDetails');
 $logError = $settings->get('logError');
