@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Settings\SettingsInterface;
 use App\Application\Views\Extensions\AssetsExtension;
 use App\Infrastructure\Database\Connection;
+use App\Infrastructure\Database\ConnectionInterface;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -49,7 +50,7 @@ return function (ContainerBuilder $containerBuilder) {
             return $logger;
         },
 
-        Connection::class => function (ContainerInterface $c) {
+        ConnectionInterface::class => function (ContainerInterface $c) {
             /** @var SettingsInterface $settings */
             $settings = $c->get(SettingsInterface::class);
 
@@ -79,6 +80,8 @@ return function (ContainerBuilder $containerBuilder) {
             /** @var FlashInterface */
             $flash = $c->get(SessionInterface::class)->getFlash();
             $twigEnv->addGlobal('flash', $flash);
+
+            $twigEnv->addGlobal('language', $settings->get('language'));
 
             return $twig;
         },

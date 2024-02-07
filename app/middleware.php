@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// use App\Application\Middleware\SessionMiddleware;
 use Odan\Session\Middleware\SessionStartMiddleware;
 use Slim\App;
 use Slim\Views\Twig;

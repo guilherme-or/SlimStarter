@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions\User;
+namespace App\Application\Actions\Credential;
 
 use App\Application\Actions\Action;
-use App\Domain\User\UserRepository;
+use App\Domain\Credential\CredentialRepository;
 use App\Infrastructure\Database\ConnectionInterface;
 use Odan\Session\SessionInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Views\Twig;
 use voku\helper\AntiXSS;
 
-abstract class UserAction extends Action
+abstract class CredentialAction extends Action
 {
-    protected UserRepository $userRepository;
+    protected CredentialRepository $credentialRepository;
 
     public function __construct(
         SessionInterface $session,
@@ -22,7 +22,7 @@ abstract class UserAction extends Action
         Twig $twig,
         LoggerInterface $logger,
         AntiXSS $antiXss,
-        UserRepository $userRepository
+        CredentialRepository $credentialRepository
     ) {
         parent::__construct(
             $session,
@@ -31,6 +31,6 @@ abstract class UserAction extends Action
             $logger,
             $antiXss
         );
-        $this->userRepository = $userRepository;
+        $this->credentialRepository = $credentialRepository;
     }
 }

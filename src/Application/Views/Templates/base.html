@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="{{ language }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="shortcut icon" href="{{ assets('img/slimframework.png') }}">
+
+    <link rel="stylesheet" href="{{ assets('css/globals.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+
+    <script src="{{ assets('js/utils.js') }}" type="module"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

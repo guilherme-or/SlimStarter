@@ -1,0 +1,39 @@
+{% extends "Templates/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block styles %}
+<style>
+    button {
+        background-color: #ff1818;
+        color: #FFFFFF;
+        border: 0;
+        border-radius: .25rem;
+        cursor: pointer;
+        padding: .5rem;
+        transition: all .25s;
+    }
+
+    button:hover {
+        background-color: #c41b1b;
+    }
+
+    button:disabled {
+        background-color: #ff4d4d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <h1>Hello World!</h1>
+    <p>This is the home page...</p>
+    <p>Try: '/users' and '/users/{id}'</p>
+    <br>
+    <form action="{{ url_for('credentials.logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</main>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

@@ -189,30 +189,12 @@ declare(strict_types=1);
 
 namespace App\Domain\{{ entityName }};
 
-use App\Domain\Entity;
 use JsonSerializable;
 
-class {{ entityName }} implements Entity, JsonSerializable
+class {{ entityName }} implements JsonSerializable
 {
     public function __construct()
     {
-    }
-
-    public function __get(string $name)
-    {
-        return property_exists($this, $name) ? $this->$name : null;
-    }
-
-    public function __set(string $name, $value): void
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    public static function fromJson(array $json): {{ entityName }}
-    {
-        return new {{ entityName }}();
     }
 
     #[\ReturnTypeWillChange]

@@ -40,6 +40,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'logError' => false,
                 'logErrorDetails' => false,
                 'serverPath' => $_ENV['SERVER_PATH'] ?? null,
+                'language' => 'en',
                 'session' => [
                     'name' => 'starter',
                     'lifetime' => (30 * 60), // 30 minutes

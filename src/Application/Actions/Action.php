@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Domain\DomainException\DomainInvalidRecordException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
-use App\Infrastructure\Database\Connection;
+use App\Infrastructure\Database\ConnectionInterface;
 use Odan\Session\SessionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -19,7 +20,7 @@ abstract class Action
 {
     // Dependencies
     protected SessionInterface $session;
-    protected Connection $connection;
+    protected ConnectionInterface $connection;
     protected Twig $twig;
     protected LoggerInterface $logger;
     protected AntiXSS $antiXss;
@@ -31,7 +32,7 @@ abstract class Action
 
     public function __construct(
         SessionInterface $session,
-        Connection $connection,
+        ConnectionInterface $connection,
         Twig $twig,
         LoggerInterface $logger,
         AntiXSS $antiXss
@@ -55,6 +56,8 @@ abstract class Action
 
         try {
             return $this->action();
+        } catch (DomainInvalidRecordException $e) {
+            throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainRecordNotFoundException $e) {
             throw new HttpNotFoundException($this->request, $e->getMessage());
         }

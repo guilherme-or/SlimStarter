@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Credential\CredentialPageAction;
+use App\Application\Actions\Credential\DispatchAction;
+use App\Application\Actions\Credential\LogInAction;
+use App\Application\Actions\Credential\LogOutAction;
+use App\Application\Actions\HomePageAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
+use App\Application\Middleware\UserMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -15,13 +21,18 @@ return function (App $app) {
         return $response;
     });
 
-    $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
-        return $response;
-    });
+    $app->get('/login', CredentialPageAction::class)->setName('credentials.page');
+    $app->post('/login', LogInAction::class)->setName('credentials.login');
+    $app->post('/logout', LogOutAction::class)->setName('credentials.logout')
+        ->add(new UserMiddleware);
+    $app->get('/dispatcher', DispatchAction::class)->setName('credentials.dispatcher')
+        ->add(new UserMiddleware);
 
-    $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{id}', ViewUserAction::class);
-    });
+    $app->get('/', HomePageAction::class)->setName('home.page')
+        ->add(new UserMiddleware);
+
+    $app->group('/users', function (Group $users) {
+        $users->get('', ListUsersAction::class)->setName('users.list');
+        $users->get('/{id}', ViewUserAction::class)->setName('users.get');
+    })->add(new UserMiddleware);
 };

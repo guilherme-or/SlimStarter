@@ -22,7 +22,8 @@ class AssetsExtension extends AbstractExtension
                     return "";
                 }
 
-                return $this->serverPath . '/public/assets/' . $filePath;
+                // return $this->serverPath ?? '' . '/public/assets/' . $filePath;
+                return $this->serverPath . '/assets/' . $filePath;
             }),
         ];
     }
