@@ -25,8 +25,7 @@ return function (App $app) {
     $app->post('/login', LogInAction::class)->setName('credentials.login');
     $app->post('/logout', LogOutAction::class)->setName('credentials.logout')
         ->add(new UserMiddleware);
-    $app->get('/dispatcher', DispatchAction::class)->setName('credentials.dispatcher')
-        ->add(new UserMiddleware);
+    $app->get('/dispatcher', DispatchAction::class)->setName('credentials.dispatcher');
 
     $app->get('/', HomePageAction::class)->setName('home.page')
         ->add(new UserMiddleware);

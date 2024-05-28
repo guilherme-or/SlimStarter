@@ -4,33 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
+use App\Adapter\Database\DatabaseConnectionInterface;
 use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
-use App\Infrastructure\Database\ConnectionInterface;
-use Odan\Session\SessionInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Views\Twig;
 use voku\helper\AntiXSS;
 
 abstract class UserAction extends Action
 {
-    protected UserRepository $userRepository;
-
     public function __construct(
-        SessionInterface $session,
-        ConnectionInterface $connection,
-        Twig $twig,
-        LoggerInterface $logger,
-        AntiXSS $antiXss,
-        UserRepository $userRepository
+        protected DatabaseConnectionInterface $connection,
+        protected Twig $twig,
+        protected LoggerInterface $logger,
+        protected AntiXSS $antiXss,
+        protected UserRepository $userRepository
     ) {
-        parent::__construct(
-            $session,
-            $connection,
-            $twig,
-            $logger,
-            $antiXss
-        );
-        $this->userRepository = $userRepository;
     }
 }

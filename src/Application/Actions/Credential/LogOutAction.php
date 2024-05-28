@@ -9,7 +9,7 @@ use Slim\Routing\RouteContext;
 
 class LogOutAction extends CredentialAction
 {
-    private const DISPATCHER_ROUTE_NAME = "credentials.dispatcher";
+    private const LOGIN_ROUTE_NAME = "credentials.login";
 
     /**
      * {@inheritdoc}
@@ -20,7 +20,7 @@ class LogOutAction extends CredentialAction
 
         $url = RouteContext::fromRequest($this->request)
             ->getRouteParser()
-            ->urlFor(self::DISPATCHER_ROUTE_NAME);
+            ->urlFor(self::LOGIN_ROUTE_NAME);
 
         return $this->response
             ->withStatus(301)

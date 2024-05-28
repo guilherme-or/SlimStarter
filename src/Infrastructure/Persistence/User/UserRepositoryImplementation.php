@@ -4,31 +4,22 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\User;
 
+use App\Adapter\Database\DatabaseConnectionException;
+use App\Adapter\Database\DatabaseConnectionInterface;
 use App\Domain\User\User;
 use App\Domain\User\UserNotFoundException;
 use App\Domain\User\UserRepository;
-use App\Infrastructure\Database\Connection;
-use App\Infrastructure\Database\ConnectionInterface;
-use Odan\Session\SessionInterface;
 use Psr\Log\LoggerInterface;
 
 class UserRepositoryImplementation implements UserRepository
 {
-    private SessionInterface $session;
-    private LoggerInterface $logger;
-    private Connection $connection;
-
     private const SELECT_ALL = "SELECT `id`, `username`, `hash` FROM users";
     private const SELECT_BY_ID = "SELECT `id`, `username`, `hash` FROM users WHERE `id` = :id";
 
     public function __construct(
-        SessionInterface $session,
-        LoggerInterface $logger,
-        ConnectionInterface $connection,
+        private LoggerInterface $logger,
+        private DatabaseConnectionInterface $connection,
     ) {
-        $this->session = $session;
-        $this->logger = $logger;
-        $this->connection = $connection;
     }
 
     /**
@@ -36,7 +27,7 @@ class UserRepositoryImplementation implements UserRepository
      */
     public function findAll(): array
     {
-        $usersData = $this->connection->fetchQuery(self::SELECT_ALL);
+        $usersData = $this->connection->fetch(self::SELECT_ALL);
 
         if (count($usersData) === 0) {
             return $usersData; // []
@@ -53,12 +44,16 @@ class UserRepositoryImplementation implements UserRepository
      */
     public function findUserOfId(int $id): User
     {
-        $userData = $this->connection->fetchPrepare(self::SELECT_BY_ID, [
-            ':id' => $id
-        ], false);
+        try {
+            $userData = $this->connection->fetch(self::SELECT_BY_ID, [
+                ':id' => $id
+            ], false);
 
-        if (!isset($userData['id'])) {
-            throw new UserNotFoundException();
+            if (!isset($userData['id'])) {
+                throw new DatabaseConnectionException;
+            }
+        } catch (DatabaseConnectionException $e) {
+            throw new UserNotFoundException("User of id $id was not found");
         }
 
         return $this->jsonToUser($userData);

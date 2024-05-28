@@ -17,7 +17,9 @@ class CredentialPageAction extends CredentialAction
      */
     protected function action(): Response
     {
-        if (isset($_SESSION['user'])) {
+        $jwt = $this->request->getAttribute("jwt");
+
+        if (isset($jwt['user'])) {
             $url = RouteContext::fromRequest($this->request)
                 ->getRouteParser()
                 ->urlFor(self::DISPATCHER_ROUTE_NAME);

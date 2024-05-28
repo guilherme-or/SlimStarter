@@ -20,7 +20,9 @@ class UserMiddleware implements Middleware
      */
     public function process(Request $request, RequestHandler $handler): Response
     {
-        if (!isset($_SESSION['user'])) {
+        $jwt = (array) $request->getAttribute("jwt");
+
+        if (!isset($jwt["user"])) {
             if ($request->getMethod() !== "GET") {
                 throw new HttpUnauthorizedException($request, "User not logged");
             }
@@ -29,8 +31,7 @@ class UserMiddleware implements Middleware
                 ->getRouteParser()
                 ->urlFor(self::CREDENTIALS_PAGE_ROUTE_NAME);
 
-            $response = new \Slim\Psr7\Response();
-            return $response
+            return (new \Slim\Psr7\Response())
                 ->withStatus(301)
                 ->withHeader('Location', $url);
         }

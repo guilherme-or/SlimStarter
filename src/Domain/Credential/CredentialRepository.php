@@ -7,9 +7,9 @@ namespace App\Domain\Credential;
 interface CredentialRepository
 {
     /**
-     * @throws InvalidCredentialException | CredentialNotFoundException
+     * @throws CredentialInvalidationException|CredentialNotFoundException
      */
-    public function authenticate(string $username, string $password): Credential;
+    public function authenticate(string $username, string $password): CredentialToken;
 
-    public function destroy() : void;
+    public function destroy(): void;
 }

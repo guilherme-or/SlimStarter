@@ -28,7 +28,8 @@
 <main>
     <h1>Hello World!</h1>
     <p>This is the home page...</p>
-    <p>Try: '/users' and '/users/{id}'</p>
+    <p>Try: '<a href="{{ url_for('users.list') }}">/users</a>' or '<a
+            href="{{ url_for('users.get', {'id': 0}) }}">/users/{id}</a>'</p>
     <br>
     <form action="{{ url_for('credentials.logout') }}" method="post">
         <button type="submit">Logout</button>

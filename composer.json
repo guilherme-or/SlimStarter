@@ -9,8 +9,8 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
+        "jimtools/jwt-auth": "^1.0",
         "monolog/monolog": "^2.9",
-        "odan/session": "^6.1",
         "php-di/php-di": "^6.4",
         "slim/psr7": "^1.6",
         "slim/slim": "^4.12",

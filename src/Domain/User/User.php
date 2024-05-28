@@ -8,21 +8,12 @@ use JsonSerializable;
 
 class User implements JsonSerializable
 {
-    private ?int $id;
-
-    private string $username;
-
-    private string $hash;
-
-
     public function __construct(
-        ?int $id,
-        string $username,
-        string $hash,
+        private ?int $id,
+        private string $username,
+        private string $hash,
     ) {
-        $this->id = $id;
-        $this->username = strtolower($username);
-        $this->hash = $hash;
+        $this->validate();
     }
 
     public function getId(): ?int
@@ -38,6 +29,13 @@ class User implements JsonSerializable
     public function getHash(): string
     {
         return $this->hash;
+    }
+
+    private function validate(): void
+    {
+        if (empty($this->username) || empty($this->hash)) {
+            throw new UserInvalidationException("Invalid username or hash");
+        }
     }
 
     #[\ReturnTypeWillChange]

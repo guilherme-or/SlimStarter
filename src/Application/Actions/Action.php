@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\DomainException\DomainInvalidRecordException;
+use App\Adapter\Database\DatabaseConnectionInterface;
+use App\Domain\DomainException\DomainRecordInvalidationException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
-use App\Infrastructure\Database\ConnectionInterface;
-use Odan\Session\SessionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -18,30 +17,16 @@ use voku\helper\AntiXSS;
 
 abstract class Action
 {
-    // Dependencies
-    protected SessionInterface $session;
-    protected ConnectionInterface $connection;
-    protected Twig $twig;
-    protected LoggerInterface $logger;
-    protected AntiXSS $antiXss;
-
-    // HTTP
     protected Request $request;
     protected Response $response;
     protected array $args;
 
     public function __construct(
-        SessionInterface $session,
-        ConnectionInterface $connection,
-        Twig $twig,
-        LoggerInterface $logger,
-        AntiXSS $antiXss
+        protected DatabaseConnectionInterface $connection,
+        protected Twig $twig,
+        protected LoggerInterface $logger,
+        protected AntiXSS $antiXss
     ) {
-        $this->session = $session;
-        $this->connection = $connection;
-        $this->twig = $twig;
-        $this->logger = $logger;
-        $this->antiXss = $antiXss;
     }
 
     /**
@@ -56,7 +41,7 @@ abstract class Action
 
         try {
             return $this->action();
-        } catch (DomainInvalidRecordException $e) {
+        } catch (DomainRecordInvalidationException $e) {
             throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainRecordNotFoundException $e) {
             throw new HttpNotFoundException($this->request, $e->getMessage());
@@ -70,11 +55,29 @@ abstract class Action
     abstract protected function action(): Response;
 
     /**
-     * @return array|object
+     * @param string[] $requiredFields
+     * @return array|object|null
      */
-    protected function getFormData()
+    protected function getBodyData(array $requiredFields = []): array|object|null
     {
-        return $this->request->getParsedBody();
+        $body = $this->request->getParsedBody();
+
+        if ($body === null || is_object($body) || empty($requiredFields)) {
+            return $body;
+        }
+
+        $missingFields = array_filter($requiredFields, function ($field) use ($body) {
+            return !isset ($body[$field]);
+        });
+
+        if (count($missingFields) > 0) {
+            throw new HttpBadRequestException(
+                $this->request,
+                "Missing fields in request body: " . implode(', ', $missingFields)
+            );
+        }
+
+        return $body;
     }
 
     /**
@@ -124,34 +127,5 @@ abstract class Action
         return $this->twig->render($response, $templatePath, $data);
     }
 
-    /** 
-     * Voku AntiXSS string sanitizer
-     * IMPORTANT: When calling it, cast the return value to (string) or (array)
-     */
-    protected function getCleanedRequestBody(
-        array|string|null $requestBody = null,
-        bool $parsed = true
-    ): array|string {
-        $requestBody = $requestBody ??
-            $parsed ? $this->request->getParsedBody() : (string) $this->request->getBody();
 
-        if ($requestBody === null) {
-            return $parsed ? [] : "";
-        }
-
-        if (is_string($requestBody) || array_is_list($requestBody)) {
-            return $this->antiXss->xss_clean($requestBody);
-        }
-
-        $cleanedRequestBody = [];
-
-        foreach ($requestBody as $key => $value) {
-            $cleanedKey = $this->antiXss->xss_clean($key);
-            $cleanedValue = is_array($value) ?
-                $this->getCleanedRequestBody($value) : $this->antiXss->xss_clean($value);
-            $cleanedRequestBody[$cleanedKey] = $cleanedValue;
-        }
-
-        return $cleanedRequestBody;
-    }
 }

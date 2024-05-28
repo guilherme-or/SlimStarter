@@ -37,18 +37,14 @@ return function (ContainerBuilder $containerBuilder) {
         SettingsInterface::class => function () {
             return new Settings([
                 'displayErrorDetails' => true, // Set to false in production
-                'logError' => false,
-                'logErrorDetails' => false,
+                'logError' => true,
+                'logErrorDetails' => true,
                 'serverPath' => $_ENV['SERVER_PATH'] ?? null,
                 'language' => 'en',
-                'session' => [
-                    'name' => 'starter',
-                    'lifetime' => (30 * 60), // 30 minutes
-                    'path' => null,
-                    'domain' => null,
-                    'secure' => false,
-                    'httponly' => true,
-                    'cache_limiter' => 'nocache',
+                'jwt' => [
+                    'secret' => $_ENV['JWT_SECRET'],
+                    'attribute' => 'jwt',
+                    'ignore' => ['/login'],
                 ],
                 'database' => [
                     'host' => $_ENV['DATABASE_HOST'],
@@ -62,7 +58,7 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 'logger' => [
                     'name' => 'starter',
-                    'path' => isset($_ENV['docker'])
+                    'path' => isset ($_ENV['docker'])
                         ? 'php://stdout'
                         : __DIR__ . '/../logs/app.log',
                     'level' => Logger::DEBUG,
