@@ -1,0 +1,14 @@
+{% extends "Templates/base.html" %}
+
+{% block title %}{{ error }}{% endblock %}
+
+{% block content %}
+<main>
+    <h1>Oops... an error occurred.</h1>
+    <h3>HTTP {{ code }}</h3>
+    <h4>{{ error }}</h4>
+    <h6>{{ description }}</h6>
+    <br>
+    <a href="{{ url_for('credentials.login') }}">Go to login page</a>
+</main>
+{% endblock %}
