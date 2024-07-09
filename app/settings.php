@@ -41,6 +41,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'logErrorDetails' => true,
                 'serverPath' => $_ENV['SERVER_PATH'] ?? null,
                 'language' => 'en',
+                'apiUrl' => $_ENV['API_URL'] ?? 'http://localhost:8080',
                 'jwt' => [
                     'secret' => $_ENV['JWT_SECRET'],
                     'attribute' => 'jwt',

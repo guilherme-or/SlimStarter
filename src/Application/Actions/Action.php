@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Adapter\Database\DatabaseConnectionInterface;
+use App\Infrastructure\Database\DatabaseConnectionInterface;
 use App\Domain\DomainException\DomainRecordInvalidationException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -25,7 +26,8 @@ abstract class Action
         protected DatabaseConnectionInterface $connection,
         protected Twig $twig,
         protected LoggerInterface $logger,
-        protected AntiXSS $antiXss
+        protected AntiXSS $antiXss,
+        protected ClientInterface $httpClient,
     ) {
     }
 
@@ -67,7 +69,7 @@ abstract class Action
         }
 
         $missingFields = array_filter($requiredFields, function ($field) use ($body) {
-            return !isset ($body[$field]);
+            return !isset($body[$field]);
         });
 
         if (count($missingFields) > 0) {

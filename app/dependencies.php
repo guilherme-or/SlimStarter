@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-use App\Adapter\Database\DatabaseConnection;
-use App\Adapter\Database\DatabaseConnectionInterface;
+use App\Infrastructure\Database\DatabaseConnection;
+use App\Infrastructure\Database\DatabaseConnectionInterface;
 use App\Application\Settings\SettingsInterface;
 use App\Application\Views\Extensions\AssetsExtension;
 use DI\ContainerBuilder;
+use GuzzleHttp\Client;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Views\Twig;
@@ -74,7 +76,7 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
             $jwtSettings = $settings->get('jwt');
 
-            if (!isset ($jwtSettings['error'])) {
+            if (!isset($jwtSettings['error'])) {
                 $jwtSettings['error'] = function (Response $response, array $arguments) use ($c) {
                     $uri = $arguments['uri'] ?? null;
                     $message = $arguments['message'] ?? 'Unauthorized';
@@ -104,6 +106,13 @@ return function (ContainerBuilder $containerBuilder) {
             }
 
             return new JwtAuthentication($jwtSettings);
+        },
+
+        ClientInterface::class => function (ContainerInterface $c): ClientInterface {
+            $apiUrl = $c->get(SettingsInterface::class)->get("apiUrl");
+            return new Client([
+                "base_uri" => $apiUrl,
+            ]);
         },
     ]);
 };

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\User;
 
-use App\Adapter\Database\DatabaseConnectionException;
-use App\Adapter\Database\DatabaseConnectionInterface;
+use App\Infrastructure\Database\DatabaseConnectionException;
+use App\Infrastructure\Database\DatabaseConnectionInterface;
 use App\Domain\User\User;
 use App\Domain\User\UserNotFoundException;
 use App\Domain\User\UserRepository;

@@ -9,6 +9,7 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.8",
         "jimtools/jwt-auth": "^1.0",
         "monolog/monolog": "^2.9",
         "php-di/php-di": "^6.4",
